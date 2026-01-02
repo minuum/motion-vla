@@ -16,3 +16,6 @@ protobuf
 einops
 diffusers  # For Octo or diffusion-based policies
 robomimic  # For data handling standard
+torchdiffeq  # For flow-matching ODE integration
+pytest>=7.0.0  # For testing
+
