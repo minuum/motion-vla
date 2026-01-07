@@ -466,4 +466,127 @@ Dataset (1)
 
 ---
 
+---
+
 이제 명확한가요? 😊
+
+---
+
+## ⚠️ 중요: Episode vs Chunk 명확화
+
+### ❌ 흔한 오해
+
+```
+Chunk = Episode? NO!
+```
+
+### ✅ 정확한 관계
+
+```
+Episode (전체 시도):
+├─ 250 timesteps (5초 @ 50Hz)
+└─ 하나의 완전한 wiping 동작
+
+Chunk (예측 윈도우):
+├─ 50 timesteps (1초 @ 50Hz)
+└─ Episode 내의 일부 actions
+```
+
+---
+
+## 🔍 Episode 내 Chunk 추출
+
+### Episode = 전체 trajectory
+
+```python
+episode = {
+    "timesteps": 250,
+    "actions": (250, 7),  # 전체 250 steps
+    "duration": 5.0,  # 초
+}
+```
+
+### Chunk = Sliding Window
+
+```python
+# Episode에서 20개 chunks 추출
+chunks = []
+for t in range(0, 200, 10):  # stride=10
+    chunk = episode.actions[t:t+50]  # 50-step window
+    chunks.append(chunk)
+
+# Result: 20 overlapping chunks from 1 episode
+```
+
+---
+
+## 📊 시각적 비교
+
+### Episode (250 steps)
+
+```
+Episode:
+|================================================|
+0         50        100       150       200    250
+                 전체 5초
+```
+
+### Chunks (50-step windows)
+
+```
+Chunk 1:  [0────50)
+          |=====|
+
+Chunk 2:     [10───60)
+             |=====|
+
+Chunk 3:        [20───70)
+                |=====|
+
+...
+
+Chunk 20:                          [200──250)
+                                   |=====|
+```
+
+**Overlap**: 각 chunk는 40 steps씩 겹침!
+
+---
+
+## 🎯 용도의 차이
+
+| 개념 | 용도 | 크기 |
+|:---|:---|:---:|
+| **Episode** | 데이터 수집 단위 | 250 steps |
+| **Chunk** | 모델 예측 단위 | 50 steps |
+| **Sample** | 학습 데이터 단위 | (obs, chunk) 쌍 |
+
+---
+
+## 🔢 카운팅
+
+```
+1 Episode (250 steps)
+  → 20 Chunks (overlapping 50-step windows)
+    → 20 Samples (for training)
+
+380 Episodes
+  → 7,600 Chunks
+    → 7,600 Samples
+```
+
+---
+
+## 💡 핵심
+
+**Episode ≠ Chunk!**
+
+- Episode는 **전체 시도** (250 steps)
+- Chunk는 **예측 단위** (50 steps)
+- **1 Episode 안에 20개 chunks 포함됨**
+- Overlapping window로 더 많은 학습 데이터 확보!
+
+---
+
+**최종 정리**: Episode는 큰 그릇, Chunk는 그 안의 작은 조각들!
+
