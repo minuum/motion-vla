@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!-- Wiper tool URDF for Dobot E6 -->
+<!-- Simple rectangular wiper pad with suction mount -->
+<robot name="wiper_tool">
+  
+  <!-- Base attachment (connects to robot Link6) -->
+  <link name="wiper_mount">
+    <inertial>
+      <origin xyz="0 0 0.01" rpy="0 0 0"/>
+      <mass value="0.05"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.01" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.015" length="0.02"/>
+      </geometry>
+      <material name="gray">
+        <color rgba="0.5 0.5 0.5 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.01" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.015" length="0.02"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Wiper pad (rectangular sponge) -->
+  <link name="wiper_pad">
+    <inertial>
+      <origin xyz="0 0 0.005" rpy="0 0 0"/>
+      <mass value="0.03"/>
+      <inertia ixx="0.00002" ixy="0" ixz="0" iyy="0.00005" iyz="0" izz="0.00006"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.005" rpy="0 0 0"/>
+      <geometry>
+        <!-- 5cm x 3cm x 1cm wiper pad -->
+        <box size="0.05 0.03 0.01"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0.2 0.4 0.8 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.005" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.05 0.03 0.01"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Joint connecting mount to pad -->
+  <joint name="mount_to_pad" type="fixed">
+    <parent link="wiper_mount"/>
+    <child link="wiper_pad"/>
+    <origin xyz="0 0 0.02" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Tool Center Point (TCP) - at bottom center of wiper -->
+  <link name="wiper_tcp">
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+    </inertial>
+  </link>
+
+  <joint name="pad_to_tcp" type="fixed">
+    <parent link="wiper_pad"/>
+    <child link="wiper_tcp"/>
+    <origin xyz="0 0 0.01" rpy="0 0 0"/>
+  </joint>
+
+</robot>
